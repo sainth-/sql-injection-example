@@ -1,9 +1,6 @@
 package de.sainth.sqlinjectionexample;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import javax.sql.DataSource;
 
@@ -22,14 +19,40 @@ public class FilmController {
     this.dataSource = dataSource;
   }
 
-  @GetMapping("/films")
-  public int getFilmByTitle(@RequestParam(value = "name") String name) throws SQLException {
+  @GetMapping("/manualFilmCount")
+  public int getManuallyFilmCountByTitle(@RequestParam(value = "name") String name) throws SQLException {
     int count = 0;
     try (Connection con = dataSource.getConnection(); Statement stmt = con.createStatement()) {
-      String sql = "SELECT * FROM film WHERE title like '%" + name + "%'";
+      String sql = "SELECT * FROM film WHERE title LIKE '%" + name + "%'";
       ResultSet resultSet = stmt.executeQuery(sql);
       while (resultSet.next()) {
-        ++count;
+        count++;
+      }
+    }
+    return count;
+  }
+
+  @GetMapping("/filmCount")
+  public int getFilmCountByTitle(@RequestParam(value = "name") String name) throws SQLException {
+    int count = 0;
+    try (Connection con = dataSource.getConnection(); Statement stmt = con.createStatement()) {
+      String sql = "SELECT COUNT(*) FROM film WHERE title LIKE '%" + name + "%'";
+      ResultSet resultSet = stmt.executeQuery(sql);
+      if (resultSet.next()) {
+        count = resultSet.getInt(1);
+      }
+    }
+    return count;
+  }
+
+  @GetMapping("/preparedFilmCount")
+  public int getPreparedFilmCountByTitle(@RequestParam(value = "name") String name) throws SQLException {
+    int count = 0;
+    try (Connection con = dataSource.getConnection(); PreparedStatement stmt = con.prepareStatement("SELECT COUNT(*) FROM film WHERE title LIKE ?")) {
+      stmt.setString(1, "%" + name + "%");
+      ResultSet resultSet = stmt.executeQuery();
+      if (resultSet.next()) {
+        count = resultSet.getInt(1);
       }
     }
     return count;
