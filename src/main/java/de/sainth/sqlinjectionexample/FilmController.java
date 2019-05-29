@@ -49,6 +49,22 @@ public class FilmController {
     return count;
   }
 
+  @GetMapping("/noErrorFilmCount")
+  public int getFilmCountByTitleNoErrors(@RequestParam(value = "name") String name) {
+    int count = 0;
+    try (Connection con = dataSource.getConnection(); Statement stmt = con.createStatement()) {
+      String sql = "SELECT COUNT(*) FROM film WHERE title LIKE '%" + name + "%'";
+      logger.debug("getFilmCountByTitle: " + sql);
+      ResultSet resultSet = stmt.executeQuery(sql);
+      if (resultSet.next()) {
+        count = resultSet.getInt(1);
+      }
+    } catch (Exception e) {
+
+    }
+    return count;
+  }
+
   @GetMapping("/preparedFilmCount1")
   public int getMaybePreparedFilmCountByTitle(@RequestParam(value = "name") String name) throws SQLException {
     int count = 0;

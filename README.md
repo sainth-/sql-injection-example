@@ -13,6 +13,8 @@ It's a simple web service returning a count of all films containing a given stri
    "SELECT COUNT(*) FROM film WHERE title LIKE '%" + name + "%'"
    ```
    
+1. GET `http://localhost:8080/noErrorFilmCount?name=<name>` like `/filmCount` but all Exceptions are suppressed.
+   
 1. GET `http://localhost:8080/preparedFilmCount1?name=<name>` generates uses a bad prepared statement without bind parameters to query the database 
 
 1. GET `http://localhost:8080/preparedFilmCount2?name=<name>` generates uses a prepared statement using bind parameters to query the database 
