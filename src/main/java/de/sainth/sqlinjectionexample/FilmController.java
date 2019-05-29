@@ -49,7 +49,20 @@ public class FilmController {
     return count;
   }
 
-  @GetMapping("/preparedFilmCount")
+  @GetMapping("/preparedFilmCount1")
+  public int getMaybePreparedFilmCountByTitle(@RequestParam(value = "name") String name) throws SQLException {
+    int count = 0;
+    try (Connection con = dataSource.getConnection(); PreparedStatement stmt = con.prepareStatement("SELECT COUNT(*) FROM film WHERE title LIKE '%" + name + "%'")) {
+      logger.debug("getMaybePreparedFilmCountByTitle: " + stmt);
+      ResultSet resultSet = stmt.executeQuery();
+      if (resultSet.next()) {
+        count = resultSet.getInt(1);
+      }
+    }
+    return count;
+  }
+
+  @GetMapping("/preparedFilmCount2")
   public int getPreparedFilmCountByTitle(@RequestParam(value = "name") String name) throws SQLException {
     int count = 0;
     try (Connection con = dataSource.getConnection(); PreparedStatement stmt = con.prepareStatement("SELECT COUNT(*) FROM film WHERE title LIKE ?")) {
